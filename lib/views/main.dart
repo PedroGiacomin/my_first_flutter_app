@@ -1,6 +1,8 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:my_first_flutter_app/models/post.dart';
 import 'package:provider/provider.dart';
+import 'package:my_first_flutter_app/services/remote_service.dart';
 
 void main() {
   runApp(MyApp());
@@ -64,6 +66,9 @@ class _MyHomePageState extends State<MyHomePage> {
       case 1:
         page = FavoritesPage();
         break;
+      case 2:
+        page = PostPage();
+        break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
@@ -82,6 +87,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 NavigationRailDestination(
                   icon: Icon(Icons.favorite),
                   label: Text('Favorites'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.manage_search),
+                  label: Text('Posts'),
                 ),
               ],
               selectedIndex: selectedIndex,
@@ -174,6 +183,52 @@ class FavoritesPage extends StatelessWidget {
         SizedBox(height: 10),
         for (var word in appState.favorites) FavCard(word: word),
       ]),
+    );
+  }
+}
+
+class PostPage extends StatefulWidget {
+  @override
+  State<PostPage> createState() => _PostPageState();
+}
+
+class _PostPageState extends State<PostPage> {
+  List<Post>? posts;
+  var isLoaded = false;
+
+  // pra carregar tudo na hora que a pag
+  @override
+  void initState() {
+    super.initState();
+
+    getData();
+  }
+
+  // Usa a funcao definida em services
+  getData() async {
+    posts = await RemoteService().getPosts();
+
+    // Se tem posts atualiza o estado
+    if (posts != null) {
+      setState(() {
+        isLoaded = true;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Visibility(
+        visible: isLoaded,
+        replacement: Center(child: CircularProgressIndicator()),
+        child: ListView.builder(
+            itemCount: posts?.length,
+            itemBuilder: (context, index) {
+              return Container(child: Text(posts![index].title));
+            }),
+      ),
     );
   }
 }
