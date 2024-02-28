@@ -62,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
         page = GeneratorPage();
         break;
       case 1:
-        page = Placeholder();
+        page = FavoritesPage();
         break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
@@ -158,6 +158,49 @@ class GeneratorPage extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class FavoritesPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+    var countFavs = appState.favorites.length;
+
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: ListView(children: [
+        Text("You have $countFavs favorites:"),
+        SizedBox(height: 10),
+        for (var word in appState.favorites) FavCard(word: word),
+      ]),
+    );
+  }
+}
+
+class FavCard extends StatelessWidget {
+  const FavCard({
+    super.key,
+    required this.word,
+  });
+
+  final WordPair word;
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+
+    return Card(
+        color: theme.cardColor,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(children: [
+            Icon(Icons.favorite),
+            SizedBox(width: 10),
+            Text(word.asPascalCase),
+          ]),
+        ));
+    ;
   }
 }
 
