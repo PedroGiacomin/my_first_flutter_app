@@ -196,7 +196,7 @@ class _PostPageState extends State<PostPage> {
   List<Post>? posts;
   var isLoaded = false;
 
-  // pra carregar tudo na hora que a pag
+  // pra carregar tudo na hora que a pag inicia
   @override
   void initState() {
     super.initState();
@@ -226,8 +226,39 @@ class _PostPageState extends State<PostPage> {
         child: ListView.builder(
             itemCount: posts?.length,
             itemBuilder: (context, index) {
-              return Container(child: Text(posts![index].title));
+              return PostWidget(posts: posts, index: index);
             }),
+      ),
+    );
+  }
+}
+
+class PostWidget extends StatelessWidget {
+  const PostWidget({
+    super.key,
+    required this.posts,
+    required this.index,
+  });
+
+  final List<Post>? posts;
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+
+    return Card(
+      color: theme.cardColor,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(children: [
+          Text(
+              textAlign: TextAlign.center,
+              style: TextStyle(fontWeight: FontWeight.bold),
+              posts![index].title.toUpperCase()),
+          SizedBox(height: 10),
+          Text(textAlign: TextAlign.left, posts![index].body),
+        ]),
       ),
     );
   }
