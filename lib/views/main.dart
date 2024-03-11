@@ -255,7 +255,6 @@ class FavCard extends StatelessWidget {
             Text(word.asPascalCase),
           ]),
         ));
-    ;
   }
 }
 

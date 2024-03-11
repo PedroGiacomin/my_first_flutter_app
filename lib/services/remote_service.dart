@@ -18,7 +18,9 @@ class RemoteService {
       var json = response.body;
       (print('$responseStatus'));
       return postFromJson(json);
-    } else
+    } else {
       (print('$responseStatus'));
+    return null;
+    }
   }
 }
