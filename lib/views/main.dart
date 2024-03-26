@@ -1,6 +1,7 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:my_first_flutter_app/models/post.dart';
+import 'package:my_first_flutter_app/models/testes.dart';
 import 'package:provider/provider.dart';
 import 'package:my_first_flutter_app/services/remote_service.dart';
 
@@ -69,6 +70,9 @@ class _MyHomePageState extends State<MyHomePage> {
       case 2:
         page = PostPage();
         break;
+      case 3:
+        page = TestesPage();
+        break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
@@ -91,6 +95,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 NavigationRailDestination(
                   icon: Icon(Icons.manage_search),
                   label: Text('Posts'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.note_alt),
+                  label: Text('Testes'),
                 ),
               ],
               selectedIndex: selectedIndex,
@@ -233,6 +241,52 @@ class _PostPageState extends State<PostPage> {
   }
 }
 
+class TestesPage extends StatefulWidget {
+  @override
+  State<TestesPage> createState() => _TestesPageState();
+}
+
+class _TestesPageState extends State<TestesPage> {
+  List<Teste>? testes;
+  var isLoaded = false;
+
+  // pra carregar tudo na hora que a pag inicia
+  @override
+  void initState() {
+    super.initState();
+
+    getData();
+  }
+
+  // Usa a funcao definida em services
+  getData() async {
+    testes = await RemoteService().getTestes();
+
+    // Se tem posts atualiza o estado
+    if (testes != null) {
+      setState(() {
+        isLoaded = true;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Visibility(
+        visible: isLoaded,
+        replacement: Center(child: CircularProgressIndicator()),
+        child: ListView.builder(
+            itemCount: testes?.length,
+            itemBuilder: (context, index) {
+              return TesteWidget(testes: testes, index: index);
+            }),
+      ),
+    );
+  }
+}
+
 class PostWidget extends StatelessWidget {
   const PostWidget({
     super.key,
@@ -258,6 +312,39 @@ class PostWidget extends StatelessWidget {
               posts![index].title.toUpperCase()),
           SizedBox(height: 10),
           Text(textAlign: TextAlign.left, posts![index].body),
+        ]),
+      ),
+    );
+  }
+}
+
+class TesteWidget extends StatelessWidget {
+  const TesteWidget({
+    super.key,
+    required this.testes,
+    required this.index,
+  });
+
+  final List<Teste>? testes;
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+
+    return Card(
+      color: theme.cardColor,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(children: [
+          Text(
+              textAlign: TextAlign.center,
+              style: TextStyle(fontWeight: FontWeight.bold),
+              testes![index].matriculaAtleta.toString()),
+          SizedBox(height: 10),
+          Text(
+              textAlign: TextAlign.left,
+              testes![index].horaDaColeta.toString()),
         ]),
       ),
     );
